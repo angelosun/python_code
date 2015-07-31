@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+from pymongo import MongoClient
+
 
 response = requests.get('http://pm25.in/hangzhou')
 
@@ -8,6 +10,11 @@ soup = BeautifulSoup(response.text, "html.parser")
 tab = soup.find('table', attrs={'id':'detail-data'})
 i = 0
 rows = tab.find_all('tr')
+
+client = MongoClient('localhost', 27017)
+db = client['weather']
+weather_hz = db.weather_hangzhou
+
 list = []
 for row in rows:    
     if (i == 0):
@@ -16,12 +23,18 @@ for row in rows:
 
     cols = row.find_all('td')[0:3]
     dict = {}
-    print(cols[0].text.strip())
+
     dict['addr'] = cols[0].text.strip()
     dict['pm25'] = cols[1].text.strip()
-    json_str = json.dumps(dict,skipkeys=True, ensure_ascii=False,indent=2)
-    print json_str
-    list.append(json_str)
+    weather_hz.insert_one(dict)
+    #json_str = json.dumps(dict,skipkeys=True, encoding="utf-8")
+
     
-    print('####################')
-print list
+    
+
+
+
+
+
+
+
