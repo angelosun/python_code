@@ -23,12 +23,17 @@ def scrapy():
                 i+= 1
                 continue
 
-            cols = row.find_all('td')[0:3]
+            cols = row.find_all('td')[0:6]
             dict = {}
 
             dict['datetime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             dict['addr'] = cols[0].text.strip()
-            dict['pm25'] = cols[1].text.strip()
+            dict['aqi'] = cols[1].text.strip()
+            dict['level'] = cols[2].text.strip()
+            dict['pm25'] = cols[4].text.strip()
+            dict['pm10'] = cols[5].text.strip()
+
+
             weather_hz.insert_one(dict)
         #json_str = json.dumps(dict,skipkeys=True, encoding="utf-8")
         print("finish insert data into mongodb")
@@ -37,4 +42,5 @@ def scrapy():
 if __name__ == '__main__':
     t = threading.Thread(target=scrapy)
     t.start()
+    t.join()
 
