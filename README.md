@@ -1,2 +1,2 @@
 # python_code
-python code
+python练习
